@@ -18,6 +18,9 @@ bool m_debugMode = false;
 #include <stdlib.h>
 #include <opencv2/opencv.hpp>
 
+#include "cartoon.h"            // Cartoonify a photo.
+#include "ImageUtils.h"
+
 using namespace std;
 using namespace cv;
 
@@ -47,6 +50,34 @@ void readPicture(){
     waitKey(0);
     int * a=NULL;
 }
+// Keypress event handler. Note that it should be a 'char' and not an 'int' to better support Linux.
+void onKeypress(char key)
+{
+    switch (key) {
+        case 's':
+            m_sketchMode = !m_sketchMode;
+            cout << "Sketch / Paint mode: " << m_sketchMode << endl;
+            break;
+        case 'a':
+            m_alienMode = !m_alienMode;
+            cout << "Alien / Human mode: " << m_alienMode << endl;
+            // Display a stick figure outline when alien skin is enabled,
+            // so the user puts their face in the correct place.
+            if (m_alienMode) {
+                m_stickFigureIterations = NUM_STICK_FIGURE_ITERATIONS;
+            }
+            break;
+        case 'e':
+            m_evilMode = !m_evilMode;
+            cout << "Evil / Good mode: " << m_evilMode << endl;
+            break;
+        case 'd':
+            m_debugMode = !m_debugMode;
+            cout << "Debug mode: " << m_debugMode << endl;
+            break;
+    }
+}
+
 int main() {
 
     cout<<"CV VERSION:"<<CV_VERSION<<endl;
@@ -58,5 +89,41 @@ int main() {
     camera.set(CAP_PROP_FRAME_WIDTH, DESIRED_CAMERA_WIDTH);
     camera.set(CAP_PROP_FRAME_HEIGHT , DESIRED_CAMERA_HEIGHT);
 
+    namedWindow(windowName); //创建一个显示 图像的窗口
+
+    while (true){
+        Mat cameraFrame;
+        camera >> cameraFrame;
+        if(cameraFrame.empty()){
+            cerr<<"Error:couldnt grab the next Frame!";
+            exit(1);
+        }
+
+        Mat displayedFrame = Mat(cameraFrame.size(),CV_8UC3);
+
+        int debugType=2;
+        // Run the cartoonifier filter using the selected mode.
+        cartoonifyImage(cameraFrame, displayedFrame, m_sketchMode, m_alienMode, m_evilMode, debugType);
+
+        // Show a stick-figure outline of a face for a short duration, so the user knows where to put their face.
+        if (m_stickFigureIterations > 0) {
+            drawFaceStickFigure(displayedFrame);
+            m_stickFigureIterations--;
+        }
+
+        imshow(windowName,displayedFrame);
+
+        char keypress=waitKey(20);
+
+        if (keypress == VK_ESCAPE) {   // Escape Key
+            // Quit the program!
+            break;
+        }
+        // Process any other keypresses.
+        if (keypress > 0) {
+            onKeypress(keypress);
+        }
+
+    }
     return 0;
 }
