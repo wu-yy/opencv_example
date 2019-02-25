@@ -6,7 +6,7 @@ const char *windowName = "Cartoonifier";   // Name shown in the GUI window.
 // Set to true if you want to see line drawings instead of paintings.
 bool m_sketchMode = false;
 // Set to true if you want to change the skin color of the character to an alien color.
-bool m_alienMode = false;
+bool m_alienMode = true;
 // Set to true if you want an evil "bad" character instead of a "good" character.
 bool m_evilMode = false;
 // Set to true if you want to see many windows created, showing various debug info. Set to 0 otherwise.

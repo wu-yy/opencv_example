@@ -120,7 +120,7 @@ void changeFacialSkinColor(Mat smallImgBGR, Mat bigEdges, int debugType)
         // Connect the edges together, if there was a pixel gap between them.
         dilate(mask, mask, Mat());
         erode(mask, mask, Mat());
-        //imshow("constraints for floodFill", mask);
+        imshow("constraints for floodFill", mask);
 
         // YCrCb Skin detector and color changer using multiple flood fills into a mask.
         // Apply flood fill on many points around the face, to cover different shades & colors of the face.
@@ -162,8 +162,8 @@ void changeFacialSkinColor(Mat smallImgBGR, Mat bigEdges, int debugType)
         // "mask" now just contains 1's in the skin pixels and 0's for non-skin pixels.
 
         // Change the color of the skin pixels in the given BGR image.
-        int Red = 0;
-        int Green = 70;
+        int Red = 70;
+        int Green = 0;
         int Blue = 0;
         add(smallImgBGR, Scalar(Blue, Green, Red), smallImgBGR, mask);
 }
@@ -172,6 +172,7 @@ void changeFacialSkinColor(Mat smallImgBGR, Mat bigEdges, int debugType)
 // Remove black dots (upto 4x4 in size) of noise from a pure black & white image.
 // ie: The input image should be mostly white (255) and just contains some black (0) noise
 // in addition to the black (0) edges.
+//自己定义的滤波器
 void removePepperNoise(Mat &mask)
 {
     // For simplicity, ignore the top & bottom row border.
